@@ -1,3 +1,21 @@
 [submodule "ext/koura"]
 	path = ext/koura
 	url = https://github.com/tartanllama/koura.git
+[submodule "ext/cmark"]
+	path = ext/cmark
+	url = https://github.com/jgm/cmark
+[submodule "ext/yaml-cpp"]
+	path = ext/yaml-cpp
+	url = https://github.com/jbeder/yaml-cpp
+[submodule "ext/ctoml"]
+	path = ext/ctoml
+	url = https://github.com/evilncrazy/ctoml
+[submodule "ext/argh"]
+	path = ext/argh
+	url = https://github.com/adishavit/argh.git
+[submodule "ext/cxxopts"]
+	path = ext/cxxopts
+	url = https://github.com/jarro2783/cxxopts.git
+[submodule "ext/cpptoml"]
+	path = ext/cpptoml
+	url = https://github.com/skystrife/cpptoml.git
