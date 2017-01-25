@@ -1,7 +1,9 @@
 #include <experimental/filesystem>
 #include <iostream>
 #include <sstream>
+#include <fstream>
 #include "cxxopts.hpp"
+#include "cmark.h"
 #include "cpptoml.h"
 
 namespace fs = std::experimental::filesystem;
@@ -9,13 +11,14 @@ namespace fs = std::experimental::filesystem;
 void render_file(const fs::directory_entry& d) {
     if (fs::is_regular_file(d)) {
         std::string str = "";
-        std::getline(d.path(), str);
+        std::ifstream file {d.path().c_str()};
+        std::getline(file, str);
 
         std::stringstream toml_stream;
         
         if (str == "+++") {
             while (true) {
-                std::getline(d, str);
+                std::getline(file, str);
             
                 if (str == "+++") {
                     break;
@@ -28,13 +31,10 @@ void render_file(const fs::directory_entry& d) {
 
         cpptoml::parser toml{toml_stream};
         auto table = toml.parse();
-        std::cout << "Title = " << table->get_as<std::string>("title") << '\n';
+        std::cout << "Title = " << table->get_as<std::string>("title").value_or("not found") << '\n';
 
         std::stringstream markdown_stream;
-        for(std::string line; std::getline(d, line); ) {
-            markdown_stream << line;
-        }
-
+        markdown_stream << file.rdbuf();
         auto markdown_string = markdown_stream.str();
         std::cout << cmark_markdown_to_html(markdown_string.c_str(), markdown_string.size(), 0);
     }
