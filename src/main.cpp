@@ -8,7 +8,25 @@
 
 namespace fs = std::experimental::filesystem;
 
-void render_file(const fs::directory_entry& d) {
+class config {
+public:
+    config (std::string source_dir, std::string target_dir) :
+        m_source_dir{std::move(source_dir)}, m_target_dir{std::move(target_dir)}
+    {}
+
+    const fs::path& get_source_dir() const { return m_source_dir; }
+    const fs::path& get_target_dir() const { return m_target_dir; }    
+    
+private:
+    fs::path m_source_dir;
+    fs::path m_target_dir;
+};
+
+fs::path source_to_target_path (const config& cfg, const fs::path& source) {
+    return cfg.get_target_dir().string().append(source.string().substr(cfg.get_source_dir().string().size()));
+}
+
+void render_file(const config& cfg, const fs::directory_entry& d) {
     if (fs::is_regular_file(d)) {
         std::string str = "";
         std::ifstream file {d.path().c_str()};
@@ -36,7 +54,8 @@ void render_file(const fs::directory_entry& d) {
         std::stringstream markdown_stream;
         markdown_stream << file.rdbuf();
         auto markdown_string = markdown_stream.str();
-        std::cout << cmark_markdown_to_html(markdown_string.c_str(), markdown_string.size(), 0);
+        std::ofstream outfile {source_to_target_path(cfg, d.path()).replace_extension("html")};
+        outfile << cmark_markdown_to_html(markdown_string.c_str(), markdown_string.size(), 0);
     }
 }
 
@@ -44,6 +63,7 @@ int main(int argc, char* argv[]) {
     cxxopts::Options options("amer", "Static website generator");
     options.add_options()
         ("d,dir", "Site directory", cxxopts::value<std::string>())
+        ("t,target_dir", "Build directory", cxxopts::value<std::string>())        
         ("h,help", "Print help");
     options.parse(argc, argv);
 
@@ -51,9 +71,15 @@ int main(int argc, char* argv[]) {
         std::cout << options.help() << '\n';
     }
     
-    std::string dir = options.count("d") ? options["d"].as<std::string>() : ".";
+    fs::path dir = options.count("d") ? options["d"].as<std::string>() : ".";
+    dir /= "content";
+    fs::path target = options.count("t") ? options["t"].as<std::string>() : "site";
+
+    fs::create_directory(target);
+    
+    config cfg {dir,target};
     
     for (auto&& f : fs::recursive_directory_iterator(dir)) {
-        render_file(f);
+        render_file(cfg,f);
     }
 }
