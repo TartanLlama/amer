@@ -5,7 +5,7 @@
 #include "cxxopts.hpp"
 #include "cmark.h"
 #include "cpptoml.h"
-#include "koura/engine.hpp"
+#include "koura.hpp"
 
 namespace fs = std::experimental::filesystem;
 
