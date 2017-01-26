@@ -2,7 +2,7 @@
 title = "Test"
 +++
 
-Hello world
+Hello {{what}}
 -----------
 
 How are you?

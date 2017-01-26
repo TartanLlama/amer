@@ -4,7 +4,7 @@ project (Amer)
 
 include(ext/ext.cmake)
 
-include_directories("include" "ext/koura/koura" "ext/cxxopts/include" "ext/cpptoml/include")
+include_directories("include" "ext/koura/koura" "ext/cxxopts/include" "ext/cpptoml/include" "ext/koura")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 
 add_executable(amer
