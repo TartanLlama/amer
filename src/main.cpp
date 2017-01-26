@@ -5,6 +5,7 @@
 #include "cxxopts.hpp"
 #include "cmark.h"
 #include "cpptoml.h"
+#include "koura/engine.hpp"
 
 namespace fs = std::experimental::filesystem;
 
@@ -15,11 +16,11 @@ void render_file(const fs::directory_entry& d) {
         std::getline(file, str);
 
         std::stringstream toml_stream;
-        
+
         if (str == "+++") {
             while (true) {
                 std::getline(file, str);
-            
+
                 if (str == "+++") {
                     break;
                 }
@@ -33,8 +34,13 @@ void render_file(const fs::directory_entry& d) {
         auto table = toml.parse();
         std::cout << "Title = " << table->get_as<std::string>("title").value_or("not found") << '\n';
 
+        koura::engine engine{};
+        koura::context ctx{};
+        ctx.add_entity("what", koura::text_t{"world"});
+
         std::stringstream markdown_stream;
-        markdown_stream << file.rdbuf();
+        engine.render(file, markdown_stream, ctx);
+
         auto markdown_string = markdown_stream.str();
         std::cout << cmark_markdown_to_html(markdown_string.c_str(), markdown_string.size(), 0);
     }
@@ -50,9 +56,9 @@ int main(int argc, char* argv[]) {
     if (options.count("help")) {
         std::cout << options.help() << '\n';
     }
-    
+
     std::string dir = options.count("d") ? options["d"].as<std::string>() : ".";
-    
+
     for (auto&& f : fs::recursive_directory_iterator(dir)) {
         render_file(f);
     }
