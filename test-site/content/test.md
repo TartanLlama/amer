@@ -2,7 +2,7 @@
 title = "Test"
 +++
 
-Hello {{what}}
+Hello {{site.title}}, {{title}}
 -----------
 
 How are you?
