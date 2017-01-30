@@ -1,8 +1,8 @@
 +++
-title = "Test"
+title = "Bob"
 +++
 
-Hello {{site.title}}, {{title}}
------------
+Hello {{site.title}}, my name is {{title}}
+------------------------------------------
 
 How are you?

@@ -2,29 +2,20 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+
 #include "cxxopts.hpp"
 #include "cmark.h"
 #include "cpptoml.h"
 #include "koura.hpp"
 
+#include "server.hpp"
+#include "config.hpp"
+
 namespace fs = std::experimental::filesystem;
-
-class config {
-public:
-    config (std::string source_dir, std::string target_dir) :
-        m_source_dir{std::move(source_dir)}, m_target_dir{std::move(target_dir)}
-    {}
-
-    const fs::path& get_source_dir() const { return m_source_dir; }
-    const fs::path& get_target_dir() const { return m_target_dir; }
-
-private:
-    fs::path m_source_dir;
-    fs::path m_target_dir;
-};
+using namespace amer;
 
 fs::path source_to_target_path (const config& cfg, const fs::path& source) {
-    auto path = source.string().substr(cfg.get_source_dir().string().size() + std::string{"/content"}.size());
+    auto path = source.string().substr(cfg.get_source_dir().string().size() + std::string{"content"}.size());
     return cfg.get_target_dir().string().append(path);
 }
 
@@ -41,43 +32,43 @@ koura::context parse_site_config(const fs::path& file) {
     return ctx;
 }
 
-void render_file(koura::context& ctx, const config& cfg, const fs::directory_entry& d) {
-    if (fs::is_regular_file(d)) {
-        std::string str = "";
-        std::ifstream file {d.path().c_str()};
-        std::getline(file, str);
+fs::path render_file(koura::context& ctx, const config& cfg, const fs::directory_entry& d) {
+    std::string str = "";
+    std::ifstream file {d.path().c_str()};
+    std::getline(file, str);
 
-        std::stringstream toml_stream;
+    std::stringstream toml_stream;
 
-        if (str == "+++") {
-            while (true) {
-                std::getline(file, str);
+    if (str == "+++") {
+        while (true) {
+            std::getline(file, str);
 
-                if (str == "+++") {
-                    break;
-                }
-                else {
-                    toml_stream << str;
-                }
+            if (str == "+++") {
+                break;
+            }
+            else {
+                toml_stream << str;
             }
         }
-
-        cpptoml::parser toml{toml_stream};
-        auto table = toml.parse();
-        for (auto&& entry : *table) {
-            std::cout << entry.first;
-            ctx.add_entity(entry.first, entry.second->as<koura::text_t>()->get());
-        }
-
-        koura::engine engine{};
-
-        std::stringstream markdown_stream;
-        engine.render(file, markdown_stream, ctx);
-
-        auto markdown_string = markdown_stream.str();
-        std::ofstream outfile {source_to_target_path(cfg, d.path()).replace_extension("html")};
-        outfile << cmark_markdown_to_html(markdown_string.c_str(), markdown_string.size(), 0);
     }
+
+    cpptoml::parser toml{toml_stream};
+    auto table = toml.parse();
+    for (auto&& entry : *table) {
+        ctx.add_entity(entry.first, entry.second->as<koura::text_t>()->get());
+    }
+
+    koura::engine engine{};
+
+    std::stringstream markdown_stream;
+    engine.render(file, markdown_stream, ctx);
+
+    auto markdown_string = markdown_stream.str();
+    auto target = source_to_target_path(cfg, d.path()).replace_extension("html");
+    std::ofstream outfile {target};
+    outfile << cmark_markdown_to_html(markdown_string.c_str(), markdown_string.size(), 0);
+
+    return target;
 }
 
 int main(int argc, char* argv[]) {
@@ -103,7 +94,11 @@ int main(int argc, char* argv[]) {
     auto ctx = parse_site_config(config_path);
 
     config cfg {site_root,target};
+    std::vector<fs::path> files;
     for (auto&& f : fs::recursive_directory_iterator(site_root/"content")) {
-        render_file(ctx,cfg,f);
+        auto path = render_file(ctx,cfg,f);
+        files.push_back(path);
     }
+
+    run(cfg,files);
 }

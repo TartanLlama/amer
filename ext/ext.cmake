@@ -8,7 +8,7 @@ find_path(CMARK_INCLUDE_DIR "cmark.h" "/usr/include" "/usr/local/include")
 
 if((NOT CMARK_LIBRARY) OR (NOT CMARK_INCLUDE_DIR))
     message("Unable to find cmark, cloning...")
-    execute_process(COMMAND git submodule update --init -- external/cmark
+    execute_process(COMMAND git submodule update --init -- ext/cmark
                     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
     # add and exclude targets
@@ -32,3 +32,25 @@ else()
     # install fake target
     install(TARGETS libcmark_static EXPORT standardese DESTINATION ${lib_dir})
 endif()
+
+
+#
+# add onion
+#
+execute_process(COMMAND git submodule update --init -- ext/onion
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+
+SET(ONION_USE_SSL false)
+SET(ONION_USE_PAM false)
+SET(ONION_USE_PTHREADS false)
+SET(ONION_USE_PNG false)
+SET(ONION_USE_JPEG false)
+SET(ONION_USE_XML2 false)
+SET(ONION_USE_SYSTEMD false)
+SET(ONION_USE_SQLITE3 false)
+SET(ONION_USE_REDIS false)
+SET(ONION_USE_GC false)
+SET(ONION_USE_TESTS false)
+SET(ONION_EXAMPLES false)
+
+add_subdirectory(ext/onion ${CMAKE_CURRENT_BINARY_DIR}/onion)

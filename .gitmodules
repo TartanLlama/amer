@@ -22,3 +22,6 @@
 [submodule "ext/cpp-netlib"]
 	path = ext/cpp-netlib
 	url = https://github.com/cpp-netlib/cpp-netlib.git
+[submodule "ext/onion"]
+	path = ext/onion
+	url = https://github.com/davidmoreno/onion.git
