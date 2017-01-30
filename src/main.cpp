@@ -2,6 +2,8 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <thread>
+#include <chrono>
 
 #include "cxxopts.hpp"
 #include "cmark.h"
@@ -66,6 +68,15 @@ fs::path render_file(koura::context& ctx, const config& cfg, const fs::directory
     auto markdown_string = markdown_stream.str();
     auto target = source_to_target_path(cfg, d.path()).replace_extension("html");
     std::ofstream outfile {target};
+    if (!cfg.get_standalone()) {
+	outfile << "<script>\
+                        var sock = new WebSocket('ws://localhost:8080/refresh-socket');	\
+                        sock.onmessage = function (e) { \
+                            location = location;\
+                            sock.send('ok');\
+                        }\
+                    </script>";
+    }
     outfile << cmark_markdown_to_html(markdown_string.c_str(), markdown_string.size(), 0);
 
     return target;
@@ -77,6 +88,7 @@ int main(int argc, char* argv[]) {
         ("d,dir", "Site directory", cxxopts::value<std::string>())
         ("t,target_dir", "Build directory", cxxopts::value<std::string>())
         ("c,config", "Configuration file", cxxopts::value<std::string>())
+	("s,standalone", "Compile to be served separately from amer")
         ("h,help", "Print help");
     options.parse(argc, argv);
 
@@ -93,12 +105,20 @@ int main(int argc, char* argv[]) {
 
     auto ctx = parse_site_config(config_path);
 
-    config cfg {site_root,target};
+    bool standalone = options.count("s");
+    config cfg {site_root,target,standalone};
     std::vector<fs::path> files;
     for (auto&& f : fs::recursive_directory_iterator(site_root/"content")) {
         auto path = render_file(ctx,cfg,f);
         files.push_back(path);
     }
 
-    run(cfg,files);
+    server s{};
+    std::thread server_thread{
+	[&s,&cfg,&files] { s.run(cfg,files); }
+    };
+    while (true) {
+    std::this_thread::sleep_for(std::chrono::seconds(3));
+    s.refresh();
+    }
 }

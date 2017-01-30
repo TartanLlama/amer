@@ -37,20 +37,7 @@ endif()
 #
 # add onion
 #
-execute_process(COMMAND git submodule update --init -- ext/onion
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
-SET(ONION_USE_SSL false)
-SET(ONION_USE_PAM false)
-SET(ONION_USE_PTHREADS false)
-SET(ONION_USE_PNG false)
-SET(ONION_USE_JPEG false)
-SET(ONION_USE_XML2 false)
-SET(ONION_USE_SYSTEMD false)
-SET(ONION_USE_SQLITE3 false)
-SET(ONION_USE_REDIS false)
-SET(ONION_USE_GC false)
-SET(ONION_USE_TESTS false)
-SET(ONION_EXAMPLES false)
-
+# make sure the module path is set correctly
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/ext/onion/CMakeModules")
 add_subdirectory(ext/onion ${CMAKE_CURRENT_BINARY_DIR}/onion)
