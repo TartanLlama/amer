@@ -12,6 +12,7 @@
 
 #include "server.hpp"
 #include "config.hpp"
+#include "file_listener.hpp"
 
 namespace fs = std::experimental::filesystem;
 using namespace amer;
@@ -117,8 +118,9 @@ int main(int argc, char* argv[]) {
     std::thread server_thread{
 	[&s,&cfg,&files] { s.run(cfg,files); }
     };
-    while (true) {
-    std::this_thread::sleep_for(std::chrono::seconds(3));
-    s.refresh();
-    }
+
+    file_listener listener {s,cfg};
+    listener.run();
+
+    while (true){}
 }

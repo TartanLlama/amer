@@ -44,6 +44,7 @@ namespace amer {
         ONION_INFO("Listening at https://localhost:8080");
 
         Onion::Onion server(O_POOL);
+	server.setTimeout(-1);
         Onion::Url root(&server);
 
         for (auto file : files) {
