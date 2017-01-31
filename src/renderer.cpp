@@ -90,7 +90,7 @@ namespace amer {
             rend.render_to_stream(layout,intermediate_stream);
             auto intermediate_string = intermediate_stream.str();
 
-            static std::string web_socket_script =
+            static std::string_view web_socket_script =
                 "<script>\
                      var sock = new WebSocket('ws://localhost:8080/refresh-socket'); \
                      sock.onmessage = function (e) {                 \
