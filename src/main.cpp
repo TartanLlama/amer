@@ -61,17 +61,21 @@ int main(int argc, char* argv[]) {
 
     std::vector<fs::path> files;
     for (auto&& f : fs::recursive_directory_iterator(site_root/"content")) {
-        auto path = rend.render_file(f);
-        files.push_back(path);
+        if (fs::is_regular_file(f)) {
+            auto path = rend.render_content(f);
+            files.push_back(path);
+        }
     }
 
-    server s{};
-    std::thread server_thread{
-	[&s,&cfg,&files] { s.run(cfg,files); }
-    };
+    if (!cfg.get_standalone()) {
+        server s{};
+        std::thread server_thread{
+            [&s,&cfg,&files] { s.run(cfg,files); }
+        };
 
-    file_listener listener {s,cfg,rend};
-    listener.run();
+        file_listener listener {s,cfg,rend};
+        listener.run();
 
-    while (true){}
+        while (true){}
+    }
 }
