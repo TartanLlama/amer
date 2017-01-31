@@ -10,6 +10,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -static-libstdc++")
 add_executable(amer
                src/server.cpp
 	       src/file_listener.cpp
+               src/renderer.cpp
                src/main.cpp)
 
 set (CPPNETLIB_LIBS libcppnetlib-client-connections libcppnetlib-server-parsers)

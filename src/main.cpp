@@ -11,6 +11,7 @@
 #include "koura.hpp"
 
 #include "server.hpp"
+#include "renderer.hpp"
 #include "config.hpp"
 #include "file_listener.hpp"
 
@@ -33,54 +34,6 @@ koura::context parse_site_config(const fs::path& file) {
     ctx.add_entity("site", site);
 
     return ctx;
-}
-
-fs::path render_file(koura::context& ctx, const config& cfg, const fs::directory_entry& d) {
-    std::string str = "";
-    std::ifstream file {d.path().c_str()};
-    std::getline(file, str);
-
-    std::stringstream toml_stream;
-
-    if (str == "+++") {
-        while (true) {
-            std::getline(file, str);
-
-            if (str == "+++") {
-                break;
-            }
-            else {
-                toml_stream << str;
-            }
-        }
-    }
-
-    cpptoml::parser toml{toml_stream};
-    auto table = toml.parse();
-    for (auto&& entry : *table) {
-        ctx.add_entity(entry.first, entry.second->as<koura::text_t>()->get());
-    }
-
-    koura::engine engine{};
-
-    std::stringstream markdown_stream;
-    engine.render(file, markdown_stream, ctx);
-
-    auto markdown_string = markdown_stream.str();
-    auto target = source_to_target_path(cfg, d.path()).replace_extension("html");
-    std::ofstream outfile {target};
-    if (!cfg.get_standalone()) {
-	outfile << "<script>\
-                        var sock = new WebSocket('ws://localhost:8080/refresh-socket');	\
-                        sock.onmessage = function (e) { \
-                            location = location;\
-                            sock.send('ok');\
-                        }\
-                    </script>";
-    }
-    outfile << cmark_markdown_to_html(markdown_string.c_str(), markdown_string.size(), 0);
-
-    return target;
 }
 
 int main(int argc, char* argv[]) {
@@ -108,9 +61,12 @@ int main(int argc, char* argv[]) {
 
     bool standalone = options.count("s");
     config cfg {site_root,target,standalone};
+
+    renderer rend {ctx,cfg};
+
     std::vector<fs::path> files;
     for (auto&& f : fs::recursive_directory_iterator(site_root/"content")) {
-        auto path = render_file(ctx,cfg,f);
+        auto path = rend.render_file(f);
         files.push_back(path);
     }
 
