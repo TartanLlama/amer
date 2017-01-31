@@ -2,8 +2,11 @@
 #define AMER_RENDERER_HPP
 
 #include <experimental/filesystem>
+#include <iostream>
+
 #include "config.hpp"
 #include "koura.hpp"
+#include "cpptoml.h"
 
 namespace amer {
     class renderer {
@@ -15,6 +18,8 @@ namespace amer {
             -> std::experimental::filesystem::path;
 
     private:
+        auto parse_toml (std::istream& is) -> std::shared_ptr<cpptoml::table>;
+
         koura::context m_context;
         config m_config;
     };

@@ -1,7 +1,6 @@
 #include <fstream>
 
 #include "cmark.h"
-#include "cpptoml.h"
 
 #include "renderer.hpp"
 
@@ -15,16 +14,15 @@ namespace {
 }
 
 namespace amer {
-    fs::path renderer::render_file(const fs::directory_entry& d) {
-        std::string str = "";
-        std::ifstream file {d.path().c_str()};
-        std::getline(file, str);
-
+    std::shared_ptr<cpptoml::table> renderer::parse_toml(std::istream& is) {
         std::stringstream toml_stream;
 
+        std::string str = "";
+
+        std::getline(is, str);
         if (str == "+++") {
             while (true) {
-                std::getline(file, str);
+                std::getline(is, str);
 
                 if (str == "+++") {
                     break;
@@ -36,7 +34,13 @@ namespace amer {
         }
 
         cpptoml::parser toml{toml_stream};
-        auto table = toml.parse();
+        return toml.parse();
+    }
+
+    fs::path renderer::render_file(const fs::directory_entry& d) {
+        std::ifstream file {d.path().c_str()};
+
+        auto table = parse_toml(file);
         for (auto&& entry : *table) {
             m_context.add_entity(entry.first, entry.second->as<koura::text_t>()->get());
         }
