@@ -18,6 +18,7 @@ namespace amer {
 		    auto new_write_time = fs::last_write_time(f);
 		    if (!m_mod_times.count(f) || new_write_time != m_mod_times[f]) {
 			m_mod_times[f] = new_write_time;
+                        m_renderer.render_file(f);
 			m_server.refresh();
 		    }
 		} catch(...) {}

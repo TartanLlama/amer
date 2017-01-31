@@ -6,9 +6,8 @@
 #include <chrono>
 
 #include "cxxopts.hpp"
-#include "cmark.h"
-#include "cpptoml.h"
 #include "koura.hpp"
+#include "cpptoml.h"
 
 #include "server.hpp"
 #include "renderer.hpp"
@@ -18,10 +17,6 @@
 namespace fs = std::experimental::filesystem;
 using namespace amer;
 
-fs::path source_to_target_path (const config& cfg, const fs::path& source) {
-    auto path = source.string().substr(cfg.get_source_dir().string().size() + std::string{"content"}.size());
-    return cfg.get_target_dir().string().append(path);
-}
 
 koura::context parse_site_config(const fs::path& file) {
     auto toml = cpptoml::parse_file(file.c_str());
@@ -75,7 +70,7 @@ int main(int argc, char* argv[]) {
 	[&s,&cfg,&files] { s.run(cfg,files); }
     };
 
-    file_listener listener {s,cfg};
+    file_listener listener {s,cfg,rend};
     listener.run();
 
     while (true){}
