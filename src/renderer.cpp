@@ -30,7 +30,7 @@ namespace amer {
                     break;
                 }
                 else {
-                    toml_stream << str;
+                    toml_stream << str << '\n';
                 }
             }
         }
