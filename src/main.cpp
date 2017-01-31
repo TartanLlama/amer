@@ -23,8 +23,8 @@ koura::context parse_site_config(const fs::path& file) {
 
     koura::context ctx{};
     koura::object_t site{};
-    for (auto&& entry : *toml) {
-        site[entry.first] = entry.second->as<koura::text_t>()->get();
+    for (auto&& [key,value] : *toml) {
+        site[key] = value->as<koura::text_t>()->get();
     }
     ctx.add_entity("site", site);
 

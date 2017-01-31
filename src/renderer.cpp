@@ -50,8 +50,8 @@ namespace amer {
         auto toml = parse_toml(is);
 
         if (toml) {
-            for (auto&& entry : *toml) {
-                m_context.add_entity(entry.first, entry.second->as<koura::text_t>()->get());
+            for (auto&& [key, value] : *toml) {
+                m_context.add_entity(key, value->as<koura::text_t>()->get());
             }
         }
 
