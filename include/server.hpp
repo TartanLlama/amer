@@ -6,6 +6,7 @@
 
 #include "onion/websocket.h"
 #include "onion.hpp"
+#include "url.hpp"
 
 namespace amer {
     class config;
@@ -16,6 +17,10 @@ namespace amer {
 
     class server {
     public:
+        server();
+
+        void register_path(std::string path, const std::experimental::filesystem::path& file);
+
 	void run(const config& cfg, const std::vector<std::experimental::filesystem::path>&);
 	void add_websocket (onion_websocket* sock) {
 	    m_websockets.emplace_back(sock);
@@ -30,6 +35,8 @@ namespace amer {
 
     private:
 	std::vector<onion_websocket*> m_websockets;
+        Onion::Onion m_server;
+        Onion::Url m_root;
     };
 
     class websocket_handler {

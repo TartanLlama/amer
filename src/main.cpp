@@ -13,6 +13,7 @@
 #include "renderer.hpp"
 #include "config.hpp"
 #include "file_listener.hpp"
+#include "paths.hpp"
 
 namespace fs = std::experimental::filesystem;
 using namespace amer;
@@ -67,8 +68,20 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    for (auto&& f : fs::directory_iterator(site_root/"static")) {
+        fs::copy(f.path(), static_to_target_path(cfg,f.path()), fs::copy_options::update_existing);
+    }
+
     if (!cfg.get_standalone()) {
         server s{};
+
+        for (auto&& f : fs::recursive_directory_iterator(site_root/"static")) {
+            if (fs::is_regular_file(f)) {
+                auto target_path = static_to_target_path(cfg,f.path());
+                s.register_path(target_path.string(), target_path);
+            }
+        }
+
         std::thread server_thread{
             [&s,&cfg,&files] { s.run(cfg,files); }
         };

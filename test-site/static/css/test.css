@@ -1,0 +1,21 @@
+html,body{
+    background:#fff;color:#ccc;
+    font-family:"Georgia",Helvetica,Arial,Sans-Serif;
+    text-align:center;
+    height:90%;
+}
+h1{
+    font-size:10em;
+    padding:.1em 0;
+    color:#333;
+    margin:.5em auto;
+}
+div#footer{
+    font-size:smaller;
+    position:fixed;
+    bottom:0;
+    width:100%;
+}
+a:link,a:visited{
+      color:#bbb;
+}

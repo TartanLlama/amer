@@ -3,15 +3,9 @@
 #include "cmark.h"
 
 #include "renderer.hpp"
+#include "paths.hpp"
 
 namespace fs = std::experimental::filesystem;
-
-namespace {
-    fs::path source_to_target_path (const amer::config& cfg, const fs::path& source) {
-        auto path = source.string().substr(cfg.get_source_dir().string().size() + std::string{"content"}.size());
-        return cfg.get_target_dir().string().append(path);
-    }
-}
 
 namespace amer {
     std::shared_ptr<cpptoml::table> renderer::parse_toml(std::istream& is) {

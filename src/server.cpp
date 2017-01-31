@@ -7,7 +7,6 @@
 #include "url.hpp"
 #include "extrahandlers.hpp"
 
-
 #include "config.hpp"
 #include "server.hpp"
 
@@ -40,19 +39,23 @@ namespace amer {
 	}
     }
 
+    server::server() : m_server{O_POOL}, m_root{&m_server} {
+	m_server.setTimeout(-1);
+    }
+
+    void server::register_path(std::string path, const std::experimental::filesystem::path& file) {
+        m_root.add(std::move(path), Onion::StaticHandler(file.string()));
+    }
+
     void server::run(const config& cfg, const std::vector<fs::path>& files) {
         ONION_INFO("Listening at https://localhost:8080");
 
-        Onion::Onion server(O_POOL);
-	server.setTimeout(-1);
-        Onion::Url root(&server);
-
         for (auto file : files) {
-            root.add(file.replace_extension("").string(), Onion::StaticHandler(file.string()));
+            register_path(file.replace_extension("").string(), file.string());
         }
 
-	root.add("refresh-socket", websocket_handler{*this});
+	m_root.add("refresh-socket", websocket_handler{*this});
 
-        server.listen();
+        m_server.listen();
     }
 }
