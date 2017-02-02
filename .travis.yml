@@ -20,8 +20,9 @@ before_install:
     - export CXX=$TOOLCHAIN
 
     - sudo add-apt-repository 'deb http://llvm.org/apt/precise/ llvm-toolchain-precise-4.0 main' -y
+    - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
     - sudo apt-get update
-    - sudo apt-get install clang-4.0
+    - sudo apt-get install clang-4.0 gcc-7
 
 script:
     - mkdir build
