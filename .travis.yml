@@ -1,0 +1,30 @@
+language: cpp
+
+matrix:
+  include:
+      - os: linux
+        compiler: clang
+        env: CONFIG=debug_linux BUILD_DIR=Debug TOOLCHAIN="clang++-4.0"
+
+      - os: linux
+        compiler: clang
+        env: CONFIG=release_linux BUILD_DIR=Release TOOLCHAIN="clang++-4.0"
+
+git:
+  submodules: false
+
+before_install:
+    - sed -i'.bu' 's/git@github.com:/https:\/\/github.com\//' .gitmodules
+    - git submodule update --init --recursive
+
+    - export CXX=$TOOLCHAIN
+
+    - sudo add-apt-repository 'deb http://llvm.org/apt/precise/ llvm-toolchain-precise- main' -y
+    - sudo apt-get update
+    - sudo apt-get install clang-4.0
+
+
+script:
+    - mkdir build
+    - cd build
+    - cmake .. && make
