@@ -35,45 +35,78 @@ namespace amer {
         return toml.parse();
     }
 
-    std::ifstream renderer::get_layout() {
-        auto path = m_config.get_source_dir() / "layouts" / "default.html";
+    std::ifstream renderer::get_layout(koura::context& ctx) {
+        std::string layout;
+
+        auto page = ctx.get_entity("page").get_value<koura::object_t>();
+
+        try {
+            layout = page.at("layout").get_value<koura::text_t>();;
+        } catch (std::out_of_range&) {
+            layout = "default";
+        }
+
+        auto path = m_config.get_source_dir() / "layouts" / (layout + ".html");
         return std::ifstream{path.string()};
     }
 
-    void renderer::render_to_stream(std::istream& is, std::ostream& os) {
+    koura::context renderer::render_to_stream(std::istream& is, std::ostream& os) {
         auto toml = parse_toml(is);
 
+        auto ctx = m_context;
+
         if (toml) {
+            koura::object_t page;
+
             for (auto&& [key, value] : *toml) {
-                m_context.add_entity(key, value->as<koura::text_t>()->get());
+                page[key] = value->as<koura::text_t>()->get();
             }
+
+            ctx.add_entity("page", page);
         }
 
         koura::engine engine{};
 
-        engine.render(is, os, m_context);
+        engine.render(is, os, ctx);
 
+        return ctx;
     }
 
-    void renderer::render_markdown_to_stream(std::istream& is, std::ostream& os) {
+    koura::context renderer::render_markdown_to_stream(std::istream& is, std::ostream& os) {
         std::ostringstream markdown_stream;
-        render_to_stream(is, markdown_stream);
+        auto ctx = render_to_stream(is, markdown_stream);
 
         auto markdown_string = markdown_stream.str();
 
-        os << cmark_markdown_to_html(markdown_string.c_str(), markdown_string.size(), 0);
+        auto page = ctx.get_entity("page").get_value<koura::object_t>();
+        if (page.count("layout")) {
+            auto html = cmark_markdown_to_html(markdown_string.c_str(), markdown_string.size(), 0);
+
+            koura::context layout_context {ctx};
+            layout_context.add_entity("content", html);
+
+            auto layout = get_layout(ctx);
+            renderer rend {layout_context, m_config};
+
+            ctx = rend.render_to_stream(layout, os);
+        }
+        else {
+            os << cmark_markdown_to_html(markdown_string.c_str(), markdown_string.size(), 0);
+        }
+
+        return ctx;
     }
 
     fs::path renderer::render_content(const fs::directory_entry& dir_entry) {
         std::ifstream is {dir_entry.path().string()};
 
         std::ostringstream content_stream;
-        render_markdown_to_stream(is, content_stream);
+        auto ctx = render_markdown_to_stream(is, content_stream);
 
-        koura::context layout_context{};
+        koura::context layout_context{ctx};
         layout_context.add_entity("content", content_stream.str());
 
-        auto layout = get_layout();
+        auto layout = get_layout(ctx);
         renderer rend {layout_context, m_config};
 
         auto target = source_to_target_path(m_config, dir_entry.path()).replace_extension("html");

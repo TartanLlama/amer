@@ -19,9 +19,9 @@ namespace amer {
 
     private:
         auto parse_toml(std::istream& is) -> std::shared_ptr<cpptoml::table>;
-        auto get_layout() -> std::ifstream;
-        void render_to_stream(std::istream& is, std::ostream& os);
-        void render_markdown_to_stream(std::istream& is, std::ostream& os);
+        auto get_layout(koura::context& ctx) -> std::ifstream;
+        auto render_to_stream(std::istream& is, std::ostream& os) -> koura::context;
+        auto render_markdown_to_stream(std::istream& is, std::ostream& os) -> koura::context;
 
         koura::context m_context;
         config m_config;
