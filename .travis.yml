@@ -1,14 +1,6 @@
 language: cpp
 
-matrix:
-  include:
-      - os: linux
-        compiler: clang
-        env: CONFIG=debug_linux BUILD_DIR=Debug TOOLCHAIN="clang++-4.0"
-
-      - os: linux
-        compiler: clang
-        env: CONFIG=release_linux BUILD_DIR=Release TOOLCHAIN="clang++-4.0"
+compiler: gcc
 
 git:
   submodules: false
@@ -16,15 +8,9 @@ git:
 before_install:
     - sed -i'.bu' 's/git@github.com:/https:\/\/github.com\//' .gitmodules
     - git submodule update --init --recursive
-
-    - export CXX=$TOOLCHAIN
-
-    - sudo add-apt-repository 'deb http://llvm.org/apt/precise/ llvm-toolchain-precise-4.0 main' -y
-    - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
-    - sudo apt-get update
-    - sudo apt-get install clang-4.0 gcc-7
+    - git clone https://github.com/TartanLlama/gcc7-bin-travis.git
 
 script:
     - mkdir build
     - cd build
-    - cmake .. && make
+    - cmake -DCMAKE_CXX_COMPILER=gcc7-bin-travis/bin/g++ -DCMAKE_CXX_FLAGS="-L /home/simon/gcc7-bin-travis/lib64" .. && make
