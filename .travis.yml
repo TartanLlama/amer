@@ -13,4 +13,4 @@ before_install:
 script:
     - mkdir build
     - cd build
-    - cmake -DCMAKE_CXX_COMPILER=gcc7-bin-travis/bin/g++ -DCMAKE_CXX_FLAGS="-L /home/simon/gcc7-bin-travis/lib64" .. && make
+    - cmake -DCMAKE_CXX_COMPILER=../gcc7-bin-travis/bin/g++ -DCMAKE_CXX_FLAGS="-L ../gcc7-bin-travis/lib64" .. && make
