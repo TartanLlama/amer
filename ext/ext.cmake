@@ -41,3 +41,10 @@ endif()
 # make sure the module path is set correctly
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/ext/onion/CMakeModules")
 add_subdirectory(ext/onion ${CMAKE_CURRENT_BINARY_DIR}/onion)
+
+#
+# add libsass
+#
+
+file(GLOB_RECURSE libsass_sources "${CMAKE_CURRENT_SOURCE_DIR}/ext/libsass/src/*.c*")
+add_library(sass ${libsass_sources})

@@ -8,6 +8,7 @@
 #include "cxxopts.hpp"
 #include "koura.hpp"
 #include "cpptoml.h"
+#include "sass/context.h"
 
 #include "server.hpp"
 #include "renderer.hpp"
@@ -68,18 +69,40 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    for (auto&& f : fs::directory_iterator(site_root/"static")) {
-        fs::copy(f.path(), static_to_target_path(cfg,f.path()), fs::copy_options::update_existing);
+    std::vector<fs::path> statics;
+
+    for (auto&& f : fs::recursive_directory_iterator(site_root/"static")) {
+        if (fs::is_regular_file(f)) {
+            auto path = f.path();
+            if (f.path().extension() == ".scss") {
+                auto file_ctx = sass_make_file_context(f.path().c_str());
+                auto ctx = sass_file_context_get_context(file_ctx);
+                auto ret = sass_compile_file_context(file_ctx);
+
+                path = path.replace_extension(".css");
+
+                auto target = static_to_target_path(cfg,path);
+                std::ofstream out {target.string()};
+                out << sass_context_get_output_string(ctx);
+
+                sass_delete_file_context(file_ctx);
+
+                statics.push_back(target);
+            }
+            else {
+                auto target = static_to_target_path(cfg,f.path());
+                fs::create_directories(target.parent_path());
+                fs::copy(f.path(), target, fs::copy_options::update_existing);
+                statics.push_back(target);
+            }
+        }
     }
 
     if (!cfg.get_standalone()) {
         server s{};
 
-        for (auto&& f : fs::recursive_directory_iterator(site_root/"static")) {
-            if (fs::is_regular_file(f)) {
-                auto target_path = static_to_target_path(cfg,f.path());
-                s.register_path(target_path.string(), target_path);
-            }
+        for (auto&& f : statics) {
+            s.register_path(f.string(), f);
         }
 
         std::thread server_thread{

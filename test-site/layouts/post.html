@@ -2,6 +2,23 @@
 layout = "default"
 +++
 
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="canonical" href=" { { site.url } }{ { page.url } }" />
+<link rel="profile" href="http://gmpg.org/xfn/11" />
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+<link rel="stylesheet" type="text/css" media="all" href="{{ site.baseurl }}/site/css/style.css" />
+<link rel="stylesheet" type="text/css" media="all" href="{{ site.baseurl }}/site/css/timeline.css" />
+<link rel="stylesheet" type="text/css" media="all" href="{{ site.baseurl }}/site/css/syntax.css" />
+<link rel="stylesheet" type="text/css" media="all" href="{{ site.baseurl }}/site/css/jquery.mmenu.all.css" />
+    </head>
+
+    <body>
+    <div class="page-content">
+      <div class="wrap">
+
 <div class="container-fluid single">
   <div class="row">
       <h1 class="header" itemprop="name">{{ page.title }}</h1>
@@ -48,3 +65,7 @@ var disqus_shortname = "{{ site.disqus_account }}"; // required: replace example
 })();
 </script>
 {% endif %}
+      </div>
+    </div>
+    </body>
+</html>
