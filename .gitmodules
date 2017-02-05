@@ -25,3 +25,6 @@
 [submodule "ext/onion"]
 	path = ext/onion
 	url = https://github.com/davidmoreno/onion.git
+[submodule "ext/libsass"]
+	path = ext/libsass
+	url = https://github.com/sass/libsass.git
