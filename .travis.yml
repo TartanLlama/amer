@@ -8,10 +8,7 @@ git:
 before_install:
     - sed -i'.bu' 's/git@github.com:/https:\/\/github.com\//' .gitmodules
     - git submodule update --init --recursive
-    - sudo add-apt-repository 'deb http://ftp.de.debian.org/debian experimental main' -y
-    - sudo apt-get update
-    - sudo apt-get install gcc-7
-
+    - git clone https://github.com/TartanLlama/gcc7-bin-travis.git
 script:
     - mkdir build
     - cd build
