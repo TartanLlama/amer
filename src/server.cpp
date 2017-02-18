@@ -48,6 +48,7 @@ namespace amer {
     }
 
     void server::register_path(std::string path, const std::experimental::filesystem::path& file) {
+        path.replace(path.find("site/"), 5, ""); //TODO make this generic
         m_root.add(std::move(path), Onion::StaticHandler(file.string()));
     }
 

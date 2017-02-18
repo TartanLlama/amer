@@ -16,7 +16,11 @@ namespace amer {
 
     void renderer::include_handler (koura::engine& eng, std::istream& in, std::ostream& out,
                                     koura::context& ctx, const std::any& data) {
-        auto id = koura::detail::get_identifier(in);
+        koura::detail::eat_whitespace(in);
+        std::string id = "";
+        while (!std::isspace(in.peek())) {
+            id += in.get();
+        }
 
         koura::detail::eat_whitespace(in);
 
@@ -85,8 +89,13 @@ namespace amer {
         if (toml) {
             koura::object_t page;
 
+            if (ctx.contains("page")) {
+                page = ctx.get_entity("page").get_value<koura::object_t>();
+            }
+
             for (auto&& [key, value] : *toml) {
-                page[key] = value->as<koura::text_t>()->get();
+                auto val = value->as<koura::text_t>()->get();
+                page[key] = val;
             }
 
             ctx.add_entity("page", page);

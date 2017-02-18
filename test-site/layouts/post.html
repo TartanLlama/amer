@@ -1,32 +1,13 @@
 +++
 layout = "default"
 +++
-
-<!DOCTYPE html>
-<html>
-  <head>
-    <link rel="canonical" href=" { { site.url } }{ { page.url } }" />
-<link rel="profile" href="http://gmpg.org/xfn/11" />
-<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
-<link rel="stylesheet" type="text/css" media="all" href="{{ site.baseurl }}/site/css/style.css" />
-<link rel="stylesheet" type="text/css" media="all" href="{{ site.baseurl }}/site/css/timeline.css" />
-<link rel="stylesheet" type="text/css" media="all" href="{{ site.baseurl }}/site/css/syntax.css" />
-<link rel="stylesheet" type="text/css" media="all" href="{{ site.baseurl }}/site/css/jquery.mmenu.all.css" />
-<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/default.min.css">
-<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js"></script>
-    </head>
-
-    <body>
-    <div class="page-content">
-      <div class="wrap">
-
 <div class="container-fluid single">
   <div class="row">
+    <div itemscope itemtype="http://schema.org/Article" class="col-md-12 article">
       <h1 class="header" itemprop="name">{{ page.title }}</h1>
       <div class="author">
         <small><i>
-          on <span itemprop="datePublished" content="2014-08-28">{{ page.date }}</span>
+            on <span itemprop="datePublished" content="2014-08-28">{{ page.date }}</span>
         </i></small>
       </div>
 
@@ -49,15 +30,15 @@ layout = "default"
       </div>
       {% endif %}
     </div>
-
   </div>
-
 </div>
 
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js"></script>
+<script type="text/javascript">
+  hljs.initHighlightingOnLoad();
+</script>
 {% if site.disqus_account %}
       <script type="text/javascript">
-
-hljs.initHighlightingOnLoad();
 /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
 function disqus_config() { this.experiment.enable_scroll_container = true; }
 var disqus_shortname = "{{ site.disqus_account }}"; // required: replace example with your forum shortname
@@ -69,7 +50,3 @@ var disqus_shortname = "{{ site.disqus_account }}"; // required: replace example
 })();
 </script>
 {% endif %}
-      </div>
-    </div>
-    </body>
-</html>
