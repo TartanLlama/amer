@@ -40,7 +40,11 @@ namespace amer {
     }
 
     server::server() : m_server{O_POOL}, m_root{&m_server} {
-	m_server.setTimeout(-1);
+        //This should really be -1, but it seems there is a bug
+        //with infinite websocket timeouts, so just something large for now
+        constexpr auto timeout = 1'000'000'000;
+
+	m_server.setTimeout(timeout);
     }
 
     void server::register_path(std::string path, const std::experimental::filesystem::path& file) {
