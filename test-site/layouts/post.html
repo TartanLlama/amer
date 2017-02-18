@@ -13,6 +13,8 @@ layout = "default"
 <link rel="stylesheet" type="text/css" media="all" href="{{ site.baseurl }}/site/css/timeline.css" />
 <link rel="stylesheet" type="text/css" media="all" href="{{ site.baseurl }}/site/css/syntax.css" />
 <link rel="stylesheet" type="text/css" media="all" href="{{ site.baseurl }}/site/css/jquery.mmenu.all.css" />
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js"></script>
     </head>
 
     <body>
@@ -53,7 +55,9 @@ layout = "default"
 </div>
 
 {% if site.disqus_account %}
-<script type="text/javascript">
+      <script type="text/javascript">
+
+hljs.initHighlightingOnLoad();
 /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
 function disqus_config() { this.experiment.enable_scroll_container = true; }
 var disqus_shortname = "{{ site.disqus_account }}"; // required: replace example with your forum shortname
