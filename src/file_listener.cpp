@@ -6,7 +6,7 @@
 
 namespace fs = std::experimental::filesystem;
 
-static constexpr auto sleep_time = std::chrono::milliseconds(100)
+static constexpr auto sleep_time = std::chrono::milliseconds(100);
 
 namespace amer {
     void file_listener::run() {
