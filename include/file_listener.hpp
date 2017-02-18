@@ -18,6 +18,10 @@ namespace amer {
             m_server{s}, m_config{std::move(cfg)}, m_renderer{rend} {}
 	void run();
 
+        void record_modification_time(const path& f, file_time_type new_write_time) {
+            m_mod_times[f] = new_write_time;
+        }
+
     private:
 	void do_run();
 
