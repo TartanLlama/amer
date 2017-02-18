@@ -8,6 +8,33 @@
 namespace fs = std::experimental::filesystem;
 
 namespace amer {
+    renderer::renderer (koura::context ctx, config cfg)
+        : m_engine{}, m_context{std::move(ctx)}, m_config{std::move(cfg)}
+    {
+        m_engine.register_custom_expression("include", include_handler, std::ref(m_config));
+    }
+
+    void renderer::include_handler (koura::engine& eng, std::istream& in, std::ostream& out,
+                                    koura::context& ctx, const std::any& data) {
+        auto id = koura::detail::get_identifier(in);
+
+        koura::detail::eat_whitespace(in);
+
+        if (in.get() != '%' || in.get() != '}') {
+            throw koura::render_error{in};
+        }
+
+        auto& cfg = std::any_cast<std::reference_wrapper<config>>(data).get();
+
+        auto path = cfg.get_source_dir() / "includes" / id;
+
+        std::ifstream file {path.string()};
+
+        renderer r {ctx, cfg};
+        r.render_to_stream(file, out);
+    }
+
+
     std::shared_ptr<cpptoml::table> renderer::parse_toml(std::istream& is) {
         std::stringstream toml_stream;
 
@@ -65,9 +92,7 @@ namespace amer {
             ctx.add_entity("page", page);
         }
 
-        koura::engine engine{};
-
-        engine.render(is, os, ctx);
+        m_engine.render(is, os, ctx);
 
         return ctx;
     }
