@@ -144,6 +144,7 @@ namespace amer {
         renderer rend {layout_context, m_config};
 
         auto target = source_to_target_path(m_config, dir_entry.path()).replace_extension("html");
+        fs::create_directories(target.parent_path());
         std::ofstream outfile {target};
 
         if (!m_config.get_standalone()) {
@@ -155,7 +156,7 @@ namespace amer {
                 "<script>\
                      var sock = new WebSocket('ws://localhost:8080/refresh-socket'); \
                      sock.onmessage = function (e) {                 \
-                         location = location;                        \
+                         window.location.reload();                   \
                          sock.send('ok');                            \
                      }                                               \
                 </script>";

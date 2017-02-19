@@ -639,41 +639,29 @@ ul {
 			    margin: 5px auto 5px auto;
 			}
 
-			figure.highlight, div.highlighter-rouge {
-				width: 100%;
-				margin-left: -15px;
-				padding-right: 10px;
+			pre {
+                                width: 100%;
+				font-family: 'Anonymous Pro';
+				background-color: $darker;
+				color: $white;
+				font-size: 12px;
+                                border: none;
+                                border-left: 2px solid $green;
+                                border-radius: 6px 0 0 6px;
+				padding-left: 15px;
+				padding-top: 20px;
+				padding-bottom: 20px;
+				padding-right: 15px;
 				box-sizing: content-box;
+				margin-bottom: 10px;
+				margin-top: 10px;
+                                right: 120px;
 
 				@media (min-width: $screen-sm-min) {
-					margin-left: -30px;
-					padding-right: 60px;
-				}
-
-				pre {
-                                    width: 100%;
-				    font-family: 'Anonymous Pro';
-				    background-color: $darker;
-				    color: $white;
-				    font-size: 12px;
-                                    border: none;
-                                    border-left: 2px solid $green;
-                                    border-radius: 6px 0 0 6px;
-				    padding-left: 15px;
-				    padding-top: 20px;
-				    padding-bottom: 20px;
-				    padding-right: 15px;
-				    box-sizing: content-box;
-				    margin-bottom: 10px;
-				    margin-top: 10px;
-                                    right: 120px;
-
-				    @media (min-width: $screen-sm-min) {
-					padding-left: 50px;
-					padding-right: 8px;
-					margin-bottom: 40px;
-					font-size: 15px;
-				    }
+				    padding-left: 50px;
+				    padding-right: 8px;
+				    margin-bottom: 40px;
+				    font-size: 15px;
 				}
 			}
 

@@ -49,14 +49,31 @@ namespace amer {
 
     void server::register_path(std::string path, const std::experimental::filesystem::path& file) {
         path.replace(path.find("site/"), 5, ""); //TODO make this generic
+        ONION_INFO("Registered path %s to %s", path.c_str(), file.c_str());
         m_root.add(std::move(path), Onion::StaticHandler(file.string()));
+    }
+
+    void server::register_redirect(std::string path, const std::experimental::filesystem::path& file) {
+        path.replace(path.find("site/"), 5, ""); //TODO make this generic
+        auto to = file.string();
+        to = "/" + to.replace(to.find("site/"), 5, ""); //TODO make this generic
+        ONION_INFO("Registered redirect %s to %s", path.c_str(), to.c_str());
+        m_root.add(std::move(path), Onion::RedirectHandler(to));
     }
 
     void server::run(const config& cfg, const std::vector<fs::path>& files) {
         ONION_INFO("Listening at https://localhost:8080");
 
         for (auto file : files) {
-            register_path(file.replace_extension("").string(), file.string());
+            constexpr auto date_length = 11;
+            auto stem = file.stem().string().substr();
+            auto path = file.parent_path() / stem.substr(date_length);
+            register_path(path, file.string());
+
+            auto year = stem.substr(0,4);
+            auto month = stem.substr(5,2);
+            auto day = stem.substr(8,2);
+            register_redirect(file.parent_path() / year / month / day / stem.substr(date_length), path);
         }
 
 	m_root.add("refresh-socket", websocket_handler{*this});

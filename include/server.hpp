@@ -20,6 +20,7 @@ namespace amer {
         server();
 
         void register_path(std::string path, const std::experimental::filesystem::path& file);
+        void register_redirect(std::string path, const std::experimental::filesystem::path& file);
 
 	void run(const config& cfg, const std::vector<std::experimental::filesystem::path>&);
 	void add_websocket (onion_websocket* sock) {

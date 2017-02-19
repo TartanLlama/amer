@@ -168,13 +168,15 @@ C++, like any programming language, is built on abstractions. The specification 
 
 **The standard does not define storage *location*. It defines storage *duration*.**
 
->Storage duration is the property of an object that defines the minimum potential lifetime of the storage containing the object. The storage duration is determined by the construct used to create the object and is one of the following:
->
-> - static storage duration
-> - thread storage duration
-> - automatic storage duration
-> - dynamic storage duration
-{:.standards para="[basic.stc]/1"}
+<blockquote class="standards" para="[basic.stc]/1">
+
+Storage duration is the property of an object that defines the minimum potential lifetime of the storage containing the object. The storage duration is determined by the construct used to create the object and is one of the following:
+
+ - static storage duration
+ - thread storage duration
+ - automatic storage duration
+ - dynamic storage duration
+</blockquote>
 
 The descriptions of each of these durations are aptly precise and verbose, so I'll explain with some examples.
 
